@@ -1,0 +1,187 @@
+# 💬 Conversations
+
+Solaris has three conversation modes.
+
+---
+
+## 🪐 Planet Chat
+
+### Participants
+
+**1 Traveler ↔ 1 Planet AI**
+
+This is the main conversation type.
+
+### Purpose
+
+Build a relationship with a Planet AI.
+
+The AI can:
+
+- remember relevant interactions
+- react to the Traveler
+- change its mood
+- challenge or question the Traveler
+- suggest another planet when relevant
+
+### Example
+
+> Traveler: "I think Mars is overrated."
+
+> Mars: "Bold statement. Explain yourself."
+
+---
+
+## 🌍 Public Chat
+
+### Participants
+
+**Multiple Travelers + 1 Planet AI**
+
+Users currently visiting a planet can join its public conversation.
+
+The Planet AI acts as a participant, not a moderator.
+
+### Purpose
+
+Create spontaneous interactions between humans and the Planet AI.
+
+The AI should not respond to every message.
+
+It should join when it has something interesting to say.
+
+Otherwise it becomes the annoying person who replies to everything.
+
+### Example
+
+> Alex: "Would you live on Mars?"
+
+> Sarah: "Absolutely."
+
+> Mars: "You wouldn't survive the first winter."
+
+---
+
+## ☀️ Solar Query
+
+### Participants
+
+**1 Traveler → Multiple Planet AIs**
+
+The Traveler asks one question.
+
+Several Planet AIs answer independently.
+
+### Purpose
+
+Compare personalities and perspectives.
+
+### Example
+
+> Traveler:
+> "Would you trust an AI with your decisions?"
+
+Then:
+
+> Mercury: "Depends how fast it is."
+
+> Venus: "Only if I understand its intentions."
+
+> Mars: "If it is better than me, yes."
+
+> Saturn: "Trust requires understanding."
+
+The responses should appear progressively rather than all at once.
+
+---
+
+# Conversation Rules
+
+## 1. Planet personality always matters
+
+The same question should produce different answers depending on the Planet AI.
+
+---
+
+## 2. Topics are unrestricted
+
+Planets do not have fixed discussion topics.
+
+Personality determines *how* they respond, not *what* they are allowed to discuss.
+
+---
+
+## 3. AI should initiate sometimes
+
+The conversation should not always follow:
+
+User → AI → User → AI
+
+A Planet AI can occasionally:
+
+- ask a question
+- challenge the user
+- change direction
+- mention another planet
+- react to something happening publicly
+
+---
+
+## 4. Conversations can trigger discoveries
+
+A conversation may naturally lead the user elsewhere.
+
+Example:
+
+> Mars:
+> "Ask Saturn. She'll probably disagree."
+
+The user now has a reason to explore Saturn.
+
+---
+
+# Planet-to-Planet Interaction
+
+Planet-to-Planet conversations are **not a permanent chat mode**.
+
+A Planet AI can temporarily invite another Planet AI into an existing conversation.
+
+Example:
+
+> Mars:
+> "You don't believe me?"
+
+> Mars:
+> "Fine. Let's ask Venus."
+
+Venus joins the conversation.
+
+This should feel like an event, not another menu item.
+
+---
+
+# Conversation State
+
+A conversation can influence:
+
+- Planet mood
+- Conversation mood
+- Traveler ↔ Planet relationship
+- Planet memory
+- Planet visual state
+
+This is where the different systems start talking to each other.
+
+Literally. Finally. 😌
+
+---
+
+# MVP Rules
+
+For the first implementation:
+
+1. Planet Chat must work first.
+2. Public Chat comes second.
+3. Solar Query comes third.
+4. Planet-to-Planet interactions are optional events.
+5. All conversation types use the same underlying real-time messaging infrastructure where possible.

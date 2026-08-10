@@ -1,0 +1,187 @@
+<div class="solar-system-wrapper">
+  <!-- Three.js Canvas Container -->
+  <div #canvasContainer class="solar-system-canvas" (click)="onCanvasClick($event)"></div>
+
+  <!-- Header Overlay -->
+  <header class="header-overlay">
+    <div class="brand">
+      <div class="sun-icon-glow"></div>
+      <div class="brand-text">
+        <h1 class="brand-title">SOLARIS</h1>
+        <p class="brand-subtitle">Exploration Interactive du Système Solaire 3D</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-glass icon-only" (click)="toggleAudio()" [attr.title]="isMuted() ? 'Activer le son' : 'Désactiver le son'">
+        <svg *ngIf="!isMuted()" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        </svg>
+        <svg *ngIf="isMuted()" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <line x1="23" y1="9" x2="17" y2="15"/>
+          <line x1="17" y1="9" x2="23" y2="15"/>
+        </svg>
+      </button>
+
+      <button class="btn-glass" (click)="resetCamera()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+        </svg>
+        <span>Vue d'ensemble</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Quick Planet Selector Navigation Bar -->
+  <nav class="planet-selector-bar">
+    <div class="selector-scroll">
+      <button
+        *ngFor="let item of celestialData"
+        class="planet-chip"
+        [class.active]="selectedBody()?.id === item.id"
+        (click)="selectBody(item)"
+      >
+        <span class="chip-color-dot" [style.background-color]="item.color"></span>
+        <span class="chip-name">{{ item.nameFr }}</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Floating Canvas Planet Labels -->
+  <div class="planet-labels-container" *ngIf="showLabels()">
+    <div
+      *ngFor="let marker of planetMarkers()"
+      class="planet-marker-label"
+      [class.active]="selectedBody()?.id === marker.id"
+      [style.left.px]="marker.screenX"
+      [style.top.px]="marker.screenY"
+      (click)="selectBody(celestialData[0])"
+    >
+      <div class="marker-dot" [class.pulse]="selectedBody()?.id === marker.id"></div>
+      <span class="marker-name">{{ marker.name }}</span>
+    </div>
+  </div>
+
+  <!-- Glassmorphic Info Drawer -->
+  <aside class="info-drawer" *ngIf="selectedBody() as body">
+    <div class="drawer-header">
+      <div class="body-badge" [style.border-color]="body.color">
+        <span class="badge-dot" [style.background-color]="body.color"></span>
+        <span class="badge-type">{{ body.type }}</span>
+      </div>
+      <h2 class="body-title" [style.color]="body.color">{{ body.nameFr }}</h2>
+      <p class="body-tagline">{{ body.tagline }}</p>
+    </div>
+
+    <div class="drawer-content">
+      <p class="body-description">{{ body.description }}</p>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Distance au Soleil</span>
+          <span class="stat-value">{{ body.distanceFromSun }}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Diamètre</span>
+          <span class="stat-value">{{ body.diameter }}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Période d'orbite</span>
+          <span class="stat-value">{{ body.orbitalPeriod }}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Période de rotation</span>
+          <span class="stat-value">{{ body.rotationPeriod }}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Lunes naturelles</span>
+          <span class="stat-value">{{ body.moonsCount }}</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Température</span>
+          <span class="stat-value">{{ body.temperature }}</span>
+        </div>
+        <div class="stat-card full-width">
+          <span class="stat-label">Masse Estimée</span>
+          <span class="stat-value">{{ body.mass }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="drawer-footer">
+      <button class="btn-primary" [style.background-color]="body.color" (click)="selectBody(body)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <span style="color: #000; font-weight: 700;">Focus sur la Planète</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Bottom Interactive Control Toolbar -->
+  <div class="control-panel">
+    <div class="control-group">
+      <!-- Play / Pause -->
+      <button class="btn-icon" (click)="togglePause()" [attr.title]="isPaused() ? 'Reprendre' : 'Mettre en pause'">
+        <svg *ngIf="!isPaused()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="6" y="4" width="4" height="16"/>
+          <rect x="14" y="4" width="4" height="16"/>
+        </svg>
+        <svg *ngIf="isPaused()" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+      </button>
+
+      <!-- Speed Presets & Slider -->
+      <div class="speed-control">
+        <span class="control-label">Vitesse: {{ simulationSpeed() | number:'1.1-1' }}x</span>
+        <input
+          type="range"
+          min="0.1"
+          max="10"
+          step="0.1"
+          [value]="simulationSpeed()"
+          (input)="setSpeed(+$any($event.target).value)"
+          class="speed-slider"
+        />
+        <div class="speed-presets">
+          <button class="btn-preset" [class.active]="simulationSpeed() === 1.0" (click)="setSpeed(1.0)">1x</button>
+          <button class="btn-preset" [class.active]="simulationSpeed() === 3.0" (click)="setSpeed(3.0)">3x</button>
+          <button class="btn-preset" [class.active]="simulationSpeed() === 8.0" (click)="setSpeed(8.0)">8x</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="control-divider"></div>
+
+    <!-- Toggle Buttons -->
+    <div class="control-group toggles">
+      <button class="btn-toggle" [class.active]="showOrbits()" (click)="toggleOrbits()" title="Afficher/Masquer les orbites">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M3.6 9h16.8"/>
+          <path d="M3.6 15h16.8"/>
+        </svg>
+        <span>Orbites</span>
+      </button>
+
+      <button class="btn-toggle" [class.active]="showLabels()" (click)="toggleLabels()" title="Afficher/Masquer les noms">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+          <line x1="7" y1="7" x2="7.01" y2="7"/>
+        </svg>
+        <span>Étiquettes</span>
+      </button>
+
+      <button class="btn-toggle" [class.active]="showAsteroids()" (click)="toggleAsteroids()" title="Afficher/Masquer la ceinture d'astéroïdes">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+        <span>Astéroïdes</span>
+      </button>
+    </div>
+  </div>
+</div>
